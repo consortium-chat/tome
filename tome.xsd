@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tome="https://consortium.chat/tome" targetNamespace="https://consortium.chat/tome" elementFormDefault="qualified" version="1.0">
+  <complexType name="container">
+    <sequence>
+      <element name="title" type="token"/>
+      <group ref="tome:clauselike" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+    <attribute name="id" type="tome:id" use="required"/>
+  </complexType>
+  <element name="tome">
+    <annotation>
+      <documentation>Root container</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="tome:container">
+          <sequence>
+            <element ref="tome:chapter" minOccurs="0" maxOccurs="unbounded"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  <element name="chapter">
+    <annotation>
+      <documentation>Chapter container</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="tome:container">
+          <sequence>
+            <element ref="tome:section" minOccurs="0" maxOccurs="unbounded"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+    <unique name="unique-chapter-id">
+      <selector xpath="./*"/>
+      <field xpath="@id"/>
+    </unique>
+  </element>
+  <element name="section">
+    <annotation>
+      <documentation>Subchapter container</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="tome:container">
+          <sequence>
+            <element ref="tome:section" minOccurs="0" maxOccurs="unbounded"/>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+    <unique name="unique-section-id">
+      <selector xpath="./*"/>
+      <field xpath="@id"/>
+    </unique>
+  </element>
+  <group name="clauselike">
+    <annotation>
+      <documentation>Clause and compound-clause elements</documentation>
+    </annotation>
+    <choice>
+      <element ref="tome:clause"/>
+      <element ref="tome:list"/>
+    </choice>
+  </group>
+  <element name="clause">
+    <annotation>
+      <documentation>Paragraph clause</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="tome:block">
+          <attribute name="id" type="tome:id" use="required"/>
+        </extension>
+      </complexContent>
+    </complexType>
+    <unique name="unique-clause-id">
+      <selector xpath="./*"/>
+      <field xpath="@id"/>
+    </unique>
+  </element>
+  <element name="list">
+    <annotation>
+      <documentation>List compound clause</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="intro" type="tome:block" minOccurs="0" maxOccurs="1"/>
+        <element name="item" type="tome:block" minOccurs="1" maxOccurs="unbounded"/>
+      </sequence>
+      <attribute name="id" type="tome:id" use="required"/>
+      <attribute name="type" type="tome:listType" use="required"/>
+    </complexType>
+    <unique name="unique-list-id">
+      <selector xpath="./*"/>
+      <field xpath="@id"/>
+    </unique>
+  </element>
+  <group name="inline">
+    <choice>
+      <element name="inlist">
+        <annotation>
+          <documentation>Inline list</documentation>
+        </annotation>
+        <complexType>
+          <sequence>
+            <element name="item" type="tome:block" minOccurs="1" maxOccurs="unbounded"/>
+          </sequence>
+          <attribute name="type" type="tome:listType" use="required"/>
+        </complexType>
+      </element>
+      <element name="toa">
+        <annotation>
+          <documentation>Term of art</documentation>
+        </annotation>
+        <complexType>
+          <simpleContent>
+            <extension base="string">
+              <attribute name="definition" type="boolean" default="false" use="optional"/>
+              <attribute name="ref" type="tome:tag" use="required"/>
+            </extension>
+          </simpleContent>
+        </complexType>
+      </element>
+      <element name="link" type="anyURI"/>
+      <element name="verbatim" type="string"/>
+    </choice>
+  </group>
+  <complexType name="block" mixed="true">
+    <annotation>
+      <documentation>Text block</documentation>
+    </annotation>
+    <sequence>
+      <group ref="tome:inline" minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+  <simpleType name="listType">
+    <annotation>
+      <documentation>List type</documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="all"/>
+      <enumeration value="any"/>
+      <enumeration value="one"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="tag">
+    <annotation>
+      <documentation>Term of art tag</documentation>
+    </annotation>
+    <restriction base="string">
+      <pattern value="[a-z0-9]+(-[a-z0-9]+)*"></pattern>
+    </restriction>
+  </simpleType>
+  <simpleType name="id">
+    <annotation>
+      <documentation>Clause and container identifier</documentation>
+    </annotation>
+    <restriction base="string">
+      <pattern value="😀|😅|🤣|😇|🙃|😉|😘|😋|🤪|🤨|🧐|🤓|😎|🤩|🥳|😏|🙁|️😖|😩|🥺|😢|😭|😤|😡|🤬|🤯|😳|🥵|🥶|😱|🤔|🤫|🤥|😶|😐|😬|🙄|😮|😴|😵|🤐|🥴|🤮|😷|🤑|🤠|😈|🤡|💩|👻|☠️|👽|👾|🤖|🎃|👋|🖖|👌|🤏|✌️|🤞|🤟|🤙|👉|👆|🖕|👍|👎|✊|🙌|🤲|🤝|🙏|✍️|💅|🤳|💪|🦵|🦶|👣|👂|👃|🫀|🫁|🧠|🦷|🦴|👀|👅|👄|🩸|🧳|☂️|🧵|🕶|🦺|👕|👖|🧤|🧦|👘|👛|🎒|👟|👑|🎩|🎓|🧢|🪖|💄|💍|💼|🐶|🐱|🐭|🦊|🐻|🦁|🐮|🐷|🐸|🙈|🙉|🙊|🐒|🐦|🦄|🐝|🐛|🦋|🐌|🐞|🕷|🕸|🦂|🐢|🐍|🦎|🦖|🐙|🦀|🐠|🐬|🐳|🦈|🐊|🦓|🦍|🐘|🐪|🦒|🦘|🐑|🪶|🦩|🕊|🦨|🦥|🌵|🎄|🌳|🪵|🌿|🍀|🍁|🍄|🐚|🌸|🌞|🌜|🌎|🪐|⭐️|✨|⚡️|💥|🔥|🌪|🌈|☁️|❄️|⛄️|💨|💧|🌊|🍎|🍐|🍊|🍋|🍌|🍉|🍇|🍓|🍒|🍑|🍍|🥥|🥝|🍅|🍆|🥑|🥦|🌶|🌽|🥕|🧅|🥔|🍞|🧀|🥚|🍖|🌭|🍕|🥪|🥗|🥫|🍙|🍥|🍡|🍦|🎂|🍬|🍿|🥜|☕️|🍻|🥄|🍽|🥣|🥢|🧂|⚽️|🎱|🪀|🏓|⛳️|🪁|🏹|🎣|🥊|🏆|🎟|🎪|🎭|🎨|🎬|🎤|🎧|🎲|🎯|🎮|🎰|🧩|🚗|🚨|🚔|✈️|🚀|🛸|🚁|⛵️|⚓️|⛽️|🚧|🚦|🗿|🗽|🏰|🏝|🌋|🏔|🏡|🏦|💻|🕹|🗜|💾|📸|🎞|📞|🧭|⏰|⏳|📡|🔋|💡|🧯|💸|💰|💳|💎|⚖️|🪜|🧰|🛠|⚙️|🪤|🧲|🔫|💣|🪓|⚔️|🛡|🔮|🔭|🔬|🩹|🧬|🌡|🧹|🧽|🔑|🖼|🪞|🎁|🎈|🎉|✉️|📥|📤|📦|🏷|📜|📊|📈|📉|📆|🗑|🗳|📋|📂|📚|🔗|📎|📏|🧮|📌|✂️|✒️|🔎|🔏|🔒|🔓|❤️|🆔|⚛️|☢️|☣️|🆚|🆘|❌|🚫|💯|⚠️|✅|🌀|📶|🎵|🎶|➕|➖|➗|✖️|♾|💱|📢|💬|🃏|🏳️|🏴|🏁|🚩"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="address">
+    <annotation>
+      <documentation>Clause and container reference address</documentation>
+    </annotation>
+    <restriction base="string">
+      <pattern value="(😀|😅|🤣|😇|🙃|😉|😘|😋|🤪|🤨|🧐|🤓|😎|🤩|🥳|😏|🙁|️😖|😩|🥺|😢|😭|😤|😡|🤬|🤯|😳|🥵|🥶|😱|🤔|🤫|🤥|😶|😐|😬|🙄|😮|😴|😵|🤐|🥴|🤮|😷|🤑|🤠|😈|🤡|💩|👻|☠️|👽|👾|🤖|🎃|👋|🖖|👌|🤏|✌️|🤞|🤟|🤙|👉|👆|🖕|👍|👎|✊|🙌|🤲|🤝|🙏|✍️|💅|🤳|💪|🦵|🦶|👣|👂|👃|🫀|🫁|🧠|🦷|🦴|👀|👅|👄|🩸|🧳|☂️|🧵|🕶|🦺|👕|👖|🧤|🧦|👘|👛|🎒|👟|👑|🎩|🎓|🧢|🪖|💄|💍|💼|🐶|🐱|🐭|🦊|🐻|🦁|🐮|🐷|🐸|🙈|🙉|🙊|🐒|🐦|🦄|🐝|🐛|🦋|🐌|🐞|🕷|🕸|🦂|🐢|🐍|🦎|🦖|🐙|🦀|🐠|🐬|🐳|🦈|🐊|🦓|🦍|🐘|🐪|🦒|🦘|🐑|🪶|🦩|🕊|🦨|🦥|🌵|🎄|🌳|🪵|🌿|🍀|🍁|🍄|🐚|🌸|🌞|🌜|🌎|🪐|⭐️|✨|⚡️|💥|🔥|🌪|🌈|☁️|❄️|⛄️|💨|💧|🌊|🍎|🍐|🍊|🍋|🍌|🍉|🍇|🍓|🍒|🍑|🍍|🥥|🥝|🍅|🍆|🥑|🥦|🌶|🌽|🥕|🧅|🥔|🍞|🧀|🥚|🍖|🌭|🍕|🥪|🥗|🥫|🍙|🍥|🍡|🍦|🎂|🍬|🍿|🥜|☕️|🍻|🥄|🍽|🥣|🥢|🧂|⚽️|🎱|🪀|🏓|⛳️|🪁|🏹|🎣|🥊|🏆|🎟|🎪|🎭|🎨|🎬|🎤|🎧|🎲|🎯|🎮|🎰|🧩|🚗|🚨|🚔|✈️|🚀|🛸|🚁|⛵️|⚓️|⛽️|🚧|🚦|🗿|🗽|🏰|🏝|🌋|🏔|🏡|🏦|💻|🕹|🗜|💾|📸|🎞|📞|🧭|⏰|⏳|📡|🔋|💡|🧯|💸|💰|💳|💎|⚖️|🪜|🧰|🛠|⚙️|🪤|🧲|🔫|💣|🪓|⚔️|🛡|🔮|🔭|🔬|🩹|🧬|🌡|🧹|🧽|🔑|🖼|🪞|🎁|🎈|🎉|✉️|📥|📤|📦|🏷|📜|📊|📈|📉|📆|🗑|🗳|📋|📂|📚|🔗|📎|📏|🧮|📌|✂️|✒️|🔎|🔏|🔒|🔓|❤️|🆔|⚛️|☢️|☣️|🆚|🆘|❌|🚫|💯|⚠️|✅|🌀|📶|🎵|🎶|➕|➖|➗|✖️|♾|💱|📢|💬|🃏|🏳️|🏴|🏁|🚩)+"/>
+    </restriction>
+  </simpleType>
+</schema>
